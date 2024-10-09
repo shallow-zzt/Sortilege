@@ -1,28 +1,28 @@
 package net.lyof.sortilege.crafting;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public abstract class RecipeLock {
-    public abstract boolean matches(ServerPlayer player);
-    public abstract MutableComponent getFailMessage(ServerPlayer player);
+    public abstract boolean matches(ServerPlayerEntity player);
+    public abstract MutableText getFailMessage(ServerPlayerEntity player);
 
     public static RecipeLock NONE = new RecipeLock() {
         @Override
-        public boolean matches(ServerPlayer player) {
+        public boolean matches(ServerPlayerEntity player) {
             return false;
         }
 
         @Override
-        public MutableComponent getFailMessage(ServerPlayer player) {
-            return Component.empty();
+        public MutableText getFailMessage(ServerPlayerEntity player) {
+            return Text.empty();
         }
     };
 
@@ -51,13 +51,13 @@ public abstract class RecipeLock {
         public LevelLock(int lvl) { this.lvl = lvl; }
 
         @Override
-        public boolean matches(ServerPlayer player) {
+        public boolean matches(ServerPlayerEntity player) {
             return player.experienceLevel < this.lvl;
         }
 
         @Override
-        public MutableComponent getFailMessage(ServerPlayer player) {
-            return Component.translatable("sortilege.crafting.requires_level", lvl);
+        public MutableText getFailMessage(ServerPlayerEntity player) {
+            return Text.translatable("sortilege.crafting.requires_level", lvl);
         }
 
         @Override
@@ -73,16 +73,16 @@ public abstract class RecipeLock {
         public AdvancementLock(String id) { this.id = id; }
 
         @Override
-        public boolean matches(ServerPlayer player) {
-            Advancement advc = Objects.requireNonNull(player.getServer()).getAdvancements().getAdvancement(new ResourceLocation(this.id));
-            return advc != null && !player.getAdvancements().getOrStartProgress(advc).isDone();
+        public boolean matches(ServerPlayerEntity player) {
+            Advancement advc = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(new Identifier(this.id));
+            return advc != null && !player.getAdvancementTracker().getProgress(advc).isDone();
         }
 
         @Override
-        public MutableComponent getFailMessage(ServerPlayer player) {
-            Advancement advc = Objects.requireNonNull(player.getServer()).getAdvancements().getAdvancement(new ResourceLocation(this.id));
-            if (advc == null) return Component.empty();
-            return Component.translatable("sortilege.crafting.requires_advancement", advc.getChatComponent());
+        public MutableText getFailMessage(ServerPlayerEntity player) {
+            Advancement advc = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(new Identifier(this.id));
+            if (advc == null) return Text.empty();
+            return Text.translatable("sortilege.crafting.requires_advancement", advc.toHoverableText());
         }
 
         @Override

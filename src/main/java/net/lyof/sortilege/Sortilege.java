@@ -1,51 +1,44 @@
 package net.lyof.sortilege;
 
-import com.mojang.logging.LogUtils;
-import net.lyof.sortilege.attributes.ModAttributes;
-import net.lyof.sortilege.configs.ModJsonConfigs;
-import net.lyof.sortilege.enchants.ModEnchants;
-import net.lyof.sortilege.items.ModItems;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.lyof.sortilege.config.ModConfig;
+import net.lyof.sortilege.enchant.ModEnchants;
+import net.lyof.sortilege.item.ModItemGroups;
+import net.lyof.sortilege.item.ModItems;
 import net.lyof.sortilege.loot.ModLootModifiers;
-import net.lyof.sortilege.particles.ModParticles;
-import net.lyof.sortilege.recipes.AntidoteBrewingRecipe;
-import net.lyof.sortilege.recipes.PotionBrewingRecipe;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.lyof.sortilege.particle.ModParticles;
+import net.lyof.sortilege.setup.ReloadListener;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(Sortilege.MOD_ID)
-public class Sortilege {
-    public static final String MOD_ID = "sortilege";
+public class Sortilege implements ModInitializer {
+    public static final Logger LOGGER = LoggerFactory.getLogger("Sortilege");
+	public static final String MOD_ID = "sortilege";
 
-    protected static final Logger LOGGER = LogUtils.getLogger();
+	@Override
+	public void onInitialize() {
+		ModConfig.register();
 
-    public Sortilege() {
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModJsonConfigs.register();
+		ModItems.register();
+		ModItemGroups.register();
 
-        ModItems.register(eventBus);
-        ModEnchants.register(eventBus);
-        ModAttributes.register(eventBus);
-        ModParticles.register(eventBus);
-        ModLootModifiers.register(eventBus);
+		ModEnchants.register();
+		ModParticles.register();
 
-        eventBus.addListener(this::commonSetup);
+		ModLootModifiers.register();
 
-        MinecraftForge.EVENT_BUS.register(this);
-    }
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ReloadListener());
+	}
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(new AntidoteBrewingRecipe()));
-        event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(new PotionBrewingRecipe()));
-    }
+	public static Identifier makeID(String name) {
+		return Identifier.of(MOD_ID, name);
+	}
 
-    public static <T> T log(T message) {
-        LOGGER.debug(String.valueOf(message));
-        return message;
-    }
+	public static <T> T log(T message) {
+		LOGGER.info(String.valueOf(message));
+		return message;
+	}
 }

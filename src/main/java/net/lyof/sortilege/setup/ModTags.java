@@ -1,18 +1,17 @@
 package net.lyof.sortilege.setup;
 
 import net.lyof.sortilege.Sortilege;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public class ModTags {
     public static class Entities {
         public static TagKey<EntityType<?>> BOUNTIES = create("bounties");
 
         private static TagKey<EntityType<?>> create(String name) {
-            return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Sortilege.MOD_ID, name));
+            return TagKey.of(RegistryKeys.ENTITY_TYPE, Sortilege.makeID(name));
         }
     }
 
@@ -23,7 +22,7 @@ public class ModTags {
         public static TagKey<Item> UNBREAKABLE = create("unbreakable");
 
         private static TagKey<Item> create(String name) {
-            return TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(Sortilege.MOD_ID, name));
+            return TagKey.of(RegistryKeys.ITEM, Sortilege.makeID(name));
         }
     }
 }
