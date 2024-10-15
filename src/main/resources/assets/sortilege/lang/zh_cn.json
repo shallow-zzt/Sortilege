@@ -47,7 +47,7 @@
   "enchantment.sortilege.magic_protection": "魔法保护",
   "enchantment.sortilege.magic_protection.desc": "降低魔法伤害",
   "enchantment.sortilege.arcane": "覆魔",
-  "enchantment.sortilege.arcane.desc": "将造成的伤害转换为魔法类型",
+  "enchantment.sortilege.arcane.desc": "将造成的物理伤害转换为魔法伤害",
   "enchantment.sortilege.soulbound": "灵魂绑定",
   "enchantment.sortilege.soulbound.desc": "物品不会因死亡而掉落",
 
